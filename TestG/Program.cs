@@ -10,7 +10,7 @@ namespace TestG
 {
     class Program
     {
-        static readonly string path = @"D:\\Program Files\CSGame\Saves";
+        static readonly string path = @"D:\\Study\Програмування\.NET\TestG\Saves";
         static int MaxValue = 11;
         static Player Start(string Answer)
         {
@@ -325,7 +325,7 @@ namespace TestG
                                 }                               
                                 Console.WriteLine("Enter amount");
                                 int amount = Convert.ToInt32(Console.ReadLine());
-                                P.Shop_SellRes(Convert.ToInt32(index), amount);
+                                P.Shop_SellRes(Convert.ToInt32(index)-1, amount);
                             }
                             else
                             {
@@ -584,8 +584,9 @@ namespace TestG
             else
             {
                 index = random.Next(11);
-                P.Debug_Add_Res(index);
-                Console.WriteLine("You found " + P.Inventory[P.Inventory.Count-1].Item2 + "x of " + P.Inventory[P.Inventory.Count - 1].Item1.GetResName());
+                (Resource, int) FindLoot = (new Resource(index), random.Next(1, MaxValue));
+                P.Add_Res(index);
+                Console.WriteLine("You found " + FindLoot.Item2 + "x of " + FindLoot.Item1.GetResName());
                 Console.ReadLine();
                 MaxValue--;
             }

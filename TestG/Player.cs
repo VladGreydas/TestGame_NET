@@ -107,7 +107,7 @@ namespace TestG
         {
             Console.Clear();
             Random random = new Random();
-            int index = random.Next(0, 9);
+            int index = random.Next(0, 20);
             bool exit = false;
             while (!exit)
             {
@@ -125,6 +125,9 @@ namespace TestG
                     {
                         if (T.Locomotive_.Fuel >= RequiredFuel)
                         {
+                            Task.Delay(1000 * index);
+                            Console.WriteLine("Yay! We are here!");
+                            Console.ReadLine();
                             SelectedTown = Towns[index];
                             T.Locomotive_.Fuel -= RequiredFuel;
                             break;
@@ -151,18 +154,49 @@ namespace TestG
                 else index = random.Next(0, 9);
             }          
         }
-        public void Debug_Add_Res(int index)
+        public void Add_Res(int index)
         {
+            int amount = random1.Next(1, 50);
+            (Resource, int) Item = ((new Resource(index), amount)); 
             if (Inventory.Count < T.GetTotalCapacity())
             {
-                int amount = random1.Next(1, 50);
-                Inventory.Add((new Resource(index), amount));
+                foreach((Resource, int) position in Inventory)
+                {
+                    if (position.Item1.GetResName() == Item.Item1.GetResName()) {
+                        int Iindex = Inventory.BinarySearch(position);
+                        Item.Item2 += Inventory[Iindex].Item2;
+                        Inventory[index] = Item;
+                        Item = (null, 0);
+                    }
+                }
+                if(Item != (null, 0))
+                {
+                    Inventory.Add((new Resource(index), amount));
+                }                
             }           
         }
         public void Claim_Res(Enemy enemy)
         {
             (Resource, int) Item = (null, 0);
             EXP += enemy.LootEXP;
+            foreach((Resource, int) position in enemy.Inventory)
+            {
+                Item = position;
+                for (int i = 0; i < Inventory.Count; i++)
+                {
+                    if (Inventory[i].Item1.GetResName() == Item.Item1.GetResName())
+                    {
+                        Item = Inventory[i];
+                        Item.Item2 += Inventory[i].Item2;
+                        Inventory[i] = Item;
+                        Item = (null, 0);
+                        int IIndex = enemy.Inventory.BinarySearch(position);
+                        enemy.Inventory.RemoveAt(IIndex);
+                        enemy.Inventory.Sort();
+                        break;
+                    }
+                }
+            }
             for(int l = 0; l < enemy.Inventory.Count; l++)
             {
                 for (int i = 0; i < Inventory.Count; i++)

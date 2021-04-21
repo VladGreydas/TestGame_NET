@@ -72,9 +72,30 @@ namespace TestG
             while (i < random1.Next(5, 16))
             {
                 int index = random1.Next(1, 11);
-                int amount = random1.Next(1, 11);
-                Inventory.Add((new Resource(index), amount));
+                Add_Res(index);
                 i++;
+            }
+        }
+        public void Add_Res(int index)
+        {
+            int amount = random1.Next(1, 11);
+            (Resource, int) Item = ((new Resource(index), amount));
+            if (Inventory.Count < EnemyTrain.GetTotalCapacity())
+            {
+                foreach ((Resource, int) position in Inventory)
+                {
+                    if (position.Item1.GetResName() == Item.Item1.GetResName())
+                    {
+                        int Iindex = Inventory.BinarySearch(position);
+                        Item.Item2 += Inventory[Iindex].Item2;
+                        Inventory[index] = Item;
+                        Item = (null, 0);
+                    }
+                }
+                if (Item != (null, 0))
+                {
+                    Inventory.Add((new Resource(index), amount));
+                }
             }
         }
         public void Attack(Train PlayerTrain) 
