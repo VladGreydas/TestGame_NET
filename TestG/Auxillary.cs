@@ -59,12 +59,18 @@ namespace TestG
 
     public class Enemy
     {
+        private static List<string> names = new List<string> { "Alfred", "Boris", "Max", "Stepan", "Taras", "Ivan", "Van", "Billy", "Nicola", "Thomas",
+                                                            "Albertina", "Susanna", "Kate", "Halyna", "Ayanami", "Yulia", "Akeno", "Raisa", "Xenovia", "Rias" };
+        private static List<string> postnames = new List<string> { "The Calm", "The Mad", "The Clever", "The Brave", "The Strongest", "The Best", "The Beautiful", "The Ideal", "The Common", "The Worst"};
+        private static List<string> prefixes = new List<string> { "Soilder", "Sergeant", "General", "Baron", "Railroad Monarch", "GClan Soilder", "GClan Sergeant", "GClan General", "GClan Owner Consult", "GClan Owner" };
+        public string name;
         private readonly Random random1 = new Random();
         public Train EnemyTrain { get; set; }
         public List<(Resource, int)> Inventory { get; set; }
         public int LootEXP { get; set; }
         public Enemy()
         {
+            name = prefixes[random1.Next(prefixes.Count)] + " " + names[random1.Next(names.Count)] + " " + postnames[random1.Next(postnames.Count)];
             EnemyTrain = new Train(1);           
             int i = 0;
             LootEXP = random1.Next(10, 101);
@@ -82,14 +88,14 @@ namespace TestG
             (Resource, int) Item = ((new Resource(index), amount));
             if (Inventory.Count < EnemyTrain.GetTotalCapacity())
             {
-                foreach ((Resource, int) position in Inventory)
+                for (int i = 0; i < Inventory.Count; i++)
                 {
-                    if (position.Item1.GetResName() == Item.Item1.GetResName())
+                    if (Inventory[i].Item1.GetResName() == Item.Item1.GetResName())
                     {
-                        int Iindex = Inventory.BinarySearch(position);
-                        Item.Item2 += Inventory[Iindex].Item2;
-                        Inventory[index] = Item;
+                        Item.Item2 += Inventory[i].Item2;
+                        Inventory[i] = Item;
                         Item = (null, 0);
+                        break;
                     }
                 }
                 if (Item != (null, 0))

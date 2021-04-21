@@ -563,6 +563,8 @@ namespace TestG
                 bool Exit = false;
                 while(!Exit)
                 {
+                    Console.Clear();
+                    Console.WriteLine("Enemy: " + enemy.name + "\nWagons remain: " + enemy.EnemyTrain.Wagons.Count + "\n----------------");
                     P.Attack(enemy.EnemyTrain);
                     if (P.T.Wagons.Count == 0)
                     {
