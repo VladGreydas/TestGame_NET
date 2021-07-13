@@ -17,9 +17,42 @@ namespace TestG
         public int MaxArmor { get; set; }
         public int LVL { get; set; }
         public int UpgradeCost { get; set; }
+        public List<(Resource, int)> UpgradeRequirements { get; set; }
         public Wagon()
         {
 
+        }
+        public virtual bool RequirementEquals(int LVL, Player P)
+        {
+            List<bool> results = new List<bool>();
+            bool Res = false;
+            for(int i = 0; i < UpgradeRequirements.Count; i++)
+            {
+                for(int j = 0; j < P.ResInventory.Count; j++)
+                {
+                    if(UpgradeRequirements[i].Item1.GetResName() == P.ResInventory[j].Item1.GetResName())
+                    {
+                        if(P.ResInventory[j].Item2 >= UpgradeRequirements[i].Item2)
+                        {
+                            results.Add(true);
+                        }
+                    }
+                }
+                if (results.Count == i) results.Add(false);
+            }
+            if(results.Count > 1)
+            {
+                Res = results[0];
+                for(int i = 1; i < results.Count; i++)
+                {
+                    Res &= results[i];
+                }
+            }
+            else
+            {
+                Res = results[0];
+            }
+            return Res;
         }
         public virtual void GetWagonStats(int index)
         {
@@ -37,27 +70,54 @@ namespace TestG
         {
 
         }
-        public virtual int Upgrade(int money)
+        public virtual int Upgrade(int money, Player P)
         {
+            int[] Res_Arr = { 0, 1, 9, 7, 8, 11, 13, 16, 6, 19 };
             Console.WriteLine("Upgrade " + Name + "?" + " 'Y'es/'N'o"
             + "\nUpgrade cost: " + UpgradeCost);
+            foreach (var position in UpgradeRequirements)
+            {
+                Console.WriteLine("Resource: " + position.Item1.GetResName() + "; Amount = " + position.Item2.ToString());
+            }
             string Answer = Console.ReadLine();
             if (Answer == "Y")
             {
-                if (money >= UpgradeCost)
+                if (money >= UpgradeCost && RequirementEquals(LVL, P))
                 {
                     money -= UpgradeCost;
+                    Withdrawal(P);
                     LVL_Up();
                     Console.WriteLine("Upgrade complete! \nNow " + Name + " is LVL " + LVL);
                     Console.ReadLine();
                 }
-                else Console.WriteLine("Not enough money...");
+                else Console.WriteLine("Not enough money and/or resources...");
                 Console.ReadLine();
             }
             return money;
         }
+        public virtual void Withdrawal(Player P)
+        {
+            for (int i = 0; i < UpgradeRequirements.Count; i++)
+            {
+                for (int j = 0; j < P.ResInventory.Count; j++)
+                {
+                    if (UpgradeRequirements[i].Item1.GetResName() == P.ResInventory[j].Item1.GetResName())
+                    {
+                        if (P.ResInventory[j].Item2 >= UpgradeRequirements[i].Item2)
+                        {
+                            (Resource, int) Item = (null, 0);
+                            Item = P.ResInventory[j];
+                            Item.Item2 -= UpgradeRequirements[i].Item2;
+                            P.ResInventory[j] = Item;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         public virtual void LVL_Up()
         {
+            
             LVL++;
             UpgradeCost += 100 * LVL;
             MaxArmor += 100 * LVL;
@@ -73,8 +133,10 @@ namespace TestG
         }
         public CargoWagon(int ID)
         {
-            Name = "Cargo-1";
             LVL = ID;
+            Name = "Cargo-1";
+            UpgradeRequirements = new List<(Resource, int)>();
+            UpgradeRequirements.Add((new Resource(0), 2));
             Weight = 1500;
             Price = 250;
             Armor = MaxArmor = 250;
@@ -105,7 +167,7 @@ namespace TestG
         public override void LVL_Up()
         {
             base.LVL_Up();
-            Capacity += 5 * LVL;
+            Capacity += 2 + LVL;
         }
     }
     [Serializable]
@@ -122,6 +184,8 @@ namespace TestG
         {
             Name = "Weapon-1";
             LVL = ID;
+            UpgradeRequirements = new List<(Resource, int)>();
+            UpgradeRequirements.Add((new Resource(0), 2));
             Weight = 2500;
             Price = 375;
             Armor = MaxArmor = 500;
@@ -177,7 +241,7 @@ namespace TestG
         {
             base.LVL_Up();
             Ammo_cap += 50 * LVL;
-            if(LVL % 5 == 0 && Weapon_slots < 5)
+            if(LVL % 3 == 0 && Weapon_slots < 5)
             {
                 Weapon_slots++;
                 Weapons.Add(new Weapon());
@@ -194,4 +258,15 @@ namespace TestG
             return index;
         }
     }
+    [Serializable]
+    public class AdditWagon : Wagon
+    {
+        enum AddType
+        {
+            RESEARCH,
+            AMMOBOX,
+            LIVING
+        }
+    }
+
 }

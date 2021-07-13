@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -316,12 +315,12 @@ namespace TestG
                             {
                                 P.Shop_SellAll();
                             }
-                            else if(Convert.ToInt32(index) <= P.Inventory.Count)
+                            else if(Convert.ToInt32(index) <= P.ResInventory.Count)
                             {
-                                Resource res = new Resource(P.Inventory[Convert.ToInt32(index)].Item1.ID);
-                                if (P.Inventory[Convert.ToInt32(index)].Item1.Price != res.Price)
+                                Resource res = new Resource(P.ResInventory[Convert.ToInt32(index)].Item1.ID);
+                                if (P.ResInventory[Convert.ToInt32(index)].Item1.Price != res.Price)
                                 {
-                                    P.Inventory[Convert.ToInt32(index)].Item1.Price = res.Price;
+                                    P.ResInventory[Convert.ToInt32(index)].Item1.Price = res.Price;
                                 }                               
                                 Console.WriteLine("Enter amount");
                                 int amount = Convert.ToInt32(Console.ReadLine());
@@ -552,36 +551,42 @@ namespace TestG
             }          
         }
 
+        static void Attack(Player P)
+        {
+            Enemy enemy = new Enemy(P.LVL);
+            MaxValue = 11;
+            bool Exit = false;
+            while (!Exit)
+            {
+                Console.Clear();
+                Console.WriteLine("Enemy: " + enemy.name + "\nWagons remain: " + enemy.EnemyTrain.Wagons.Count + "\n----------------");
+                P.Attack(enemy.EnemyTrain);
+                if (P.T.Wagons.Count == 0)
+                {
+                    Console.WriteLine("Defeat!");
+                    Console.ReadLine();
+                    Exit = true;
+                    Main();
+                }
+                enemy.Attack(P.T);
+                if (enemy.EnemyTrain.Wagons.Count == 0)
+                {
+                    Console.WriteLine("Victory!");
+                    P.Claim_Res(enemy);
+                    Save(P);
+                    Console.ReadLine();
+                    Exit = true;
+                }
+            }
+        }
+
         static void Scout(Player P)
         {
             Random random = new Random((int)DateTime.Now.Ticks);
             int index = random.Next(MaxValue);
             if(index == 0 || index == 1 || index == 2)
             {
-                Enemy enemy = new Enemy();
-                MaxValue = 11;
-                bool Exit = false;
-                while(!Exit)
-                {
-                    Console.Clear();
-                    Console.WriteLine("Enemy: " + enemy.name + "\nWagons remain: " + enemy.EnemyTrain.Wagons.Count + "\n----------------");
-                    P.Attack(enemy.EnemyTrain);
-                    if (P.T.Wagons.Count == 0)
-                    {
-                        Console.WriteLine("Defeat!");
-                        Console.ReadLine();
-                        Exit = true;
-                        Main();
-                    }
-                    enemy.Attack(P.T);
-                    if (enemy.EnemyTrain.Wagons.Count == 0)
-                    {
-                        Console.WriteLine("Victory!");
-                        P.Claim_Res(enemy);
-                        Console.ReadLine();
-                        Exit = true;
-                    }
-                }
+                Attack(P);
             }
             else
             {

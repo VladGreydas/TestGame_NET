@@ -19,20 +19,22 @@ namespace TestG
         public Train T { get; set; }
         public Town[] Towns { get; set; }
         public Town SelectedTown { get; set; }
-        public List<(Resource, int)> Inventory { get; set; }
+        public List<(Resource, int)> ResInventory { get; set; }
+        public List<Item> ItemInventory { get; set; }
         public Player()
         {
 
         }
         public Player(string nickname)
         {
-            Inventory = new List<(Resource, int)>();
+            ResInventory = new List<(Resource, int)>();
+            ItemInventory = new List<Item>();
             Name = nickname;
             Money = 500;
             EXP = 0;
             MaxEXP = 100;
             LVL = 1;
-            T = new Train(0);
+            T = new Train();
             Towns = new Town[20];
             Towns[0] = new Town(0);
             for (int i = 1; i < 20; i++)
@@ -56,10 +58,21 @@ namespace TestG
             {
                 foreach (Weapon w in weaponwagon.Item1.Weapons)
                 {
+                    //TODO: Attack Buffs
                     TotalAttack += w.DMG;
+                    switch (w.Weapon_Type)
+                    {
+                        //TODO: Ammo Consuming
+                        case Weapon.WeaponType.MACHINE_GUN: { break; }
+                        case Weapon.WeaponType.LIGHT_CANNON: { break; }
+                        case Weapon.WeaponType.HEAVY_CANNON: { break; }
+                        case Weapon.WeaponType.FLAMETHROWER: { break; }
+                        case Weapon.WeaponType.LASER: { break; }
+                        case Weapon.WeaponType.ROCKETS: { break; }
+                    }
                 }
             }
-            EnemyTrain.Wagons[AttackIndex-1].Armor -= TotalAttack;
+            EnemyTrain.Wagons[AttackIndex-1].Armor -= TotalAttack; // +/* Buff(Target or AOE)
             CheckDestroyedWagons();
         }
         public void CheckDestroyedWagons()
@@ -98,7 +111,7 @@ namespace TestG
         }
         public void GetInventory()
         {
-            foreach (var position in Inventory)
+            foreach (var position in ResInventory)
             {
                 Console.WriteLine("Resource: " + position.Item1.GetResName() + "; Amount = " + position.Item2.ToString());
             }
@@ -156,77 +169,64 @@ namespace TestG
         }
         public void Add_Res(int index)
         {
-            int amount = random1.Next(1, 50);
-            (Resource, int) Item = ((new Resource(index), amount)); 
-            if (Inventory.Count < T.GetTotalCapacity())
+            int amount = random1.Next(1, 11);
+            (Resource, int) Item = ((new Resource(index), amount));
+            if (ResInventory.Count < T.GetTotalCapacity())
             {
-                foreach((Resource, int) position in Inventory)
+                for (int i = 0; i < ResInventory.Count; i++)
                 {
-                    if (position.Item1.GetResName() == Item.Item1.GetResName()) {
-                        int Iindex = Inventory.BinarySearch(position);
-                        Item.Item2 += Inventory[Iindex].Item2;
-                        Inventory[index] = Item;
+                    if (ResInventory[i].Item1.GetResName() == Item.Item1.GetResName())
+                    {
+                        Item.Item2 += ResInventory[i].Item2;
+                        ResInventory[i] = Item;
                         Item = (null, 0);
+                        break;
                     }
                 }
-                if(Item != (null, 0))
+                if (Item != (null, 0))
                 {
-                    Inventory.Add((new Resource(index), amount));
-                }                
-            }           
+                    ResInventory.Add((new Resource(index), amount));
+                }
+            }
         }
         public void Claim_Res(Enemy enemy)
         {
-            (Resource, int) Item = (null, 0);
+            (Resource, int) Item;
             EXP += enemy.LootEXP;
-            foreach((Resource, int) position in enemy.Inventory)
+            while(ResInventory.Count != T.GetTotalCapacity() && enemy.Inventory.Count != 0)
             {
-                Item = position;
-                for (int i = 0; i < Inventory.Count; i++)
+                for (int i = 0; i < enemy.Inventory.Count; i++)
                 {
-                    if (Inventory[i].Item1.GetResName() == Item.Item1.GetResName())
+                    Item = enemy.Inventory[i];
+                    for (int j = 0; j < ResInventory.Count; j++)
                     {
-                        Item = Inventory[i];
-                        Item.Item2 += Inventory[i].Item2;
-                        Inventory[i] = Item;
-                        Item = (null, 0);
-                        int IIndex = enemy.Inventory.BinarySearch(position);
-                        enemy.Inventory.RemoveAt(IIndex);
-                        enemy.Inventory.Sort();
-                        break;
+                        if (ResInventory[j].Item1.GetResName() == Item.Item1.GetResName())
+                        {
+                            Item = ResInventory[j];
+                            Item.Item2 += ResInventory[j].Item2;
+                            ResInventory[j] = Item;
+                            Item = (null, 0);
+                            enemy.Inventory.RemoveAt(i);
+                            break;
+                        }
+                    }
+                    if (Item != (null, 0))
+                    {
+                        ResInventory.Add(Item);
+                        enemy.Inventory.RemoveAt(i);
                     }
                 }
-            }
-            for(int l = 0; l < enemy.Inventory.Count; l++)
-            {
-                for (int i = 0; i < Inventory.Count; i++)
-                {
-                    if (Inventory[i].Item1.GetResName() == enemy.Inventory[l].Item1.GetResName())
-                    {
-                        Item = Inventory[i];
-                        Item.Item2 += enemy.Inventory[l].Item2;
-                        Inventory[i] = Item;
-                        enemy.Inventory.RemoveAt(l);
-                        break;
-                    }
-                }
-            }
-            if (enemy.Inventory.Count > 0)
-            {
-                foreach ((Resource, int) Loot in enemy.Inventory)
-                {
-                    Money += (int)Loot.Item1.Price * Loot.Item2;
-                }
-            }
+                break;
+            }         
         }
         public void Shop_BuyRes(Resource res, int amount)
         {
             (Resource, int) Item = (null, 0);
-            if (Inventory.Count - 1 < T.GetTotalCapacity())
+            if (ResInventory.Count - 1 < T.GetTotalCapacity())
             {
                 if (Money >= res.Price * amount)
                 {
-                    foreach ((Resource, int) position in Inventory)
+                    foreach ((Resource, int) position in ResInventory)
                     {
                         if (position.Item1.GetResName() == res.GetResName())
                         {
@@ -237,13 +237,13 @@ namespace TestG
                     if (Item == (null, 0))
                     {
                         Item = (res, amount);
-                        Inventory.Add(Item);
+                        ResInventory.Add(Item);
                     }
                     else
                     {                        
-                        int index = Inventory.BinarySearch(Item);
+                        int index = ResInventory.BinarySearch(Item);
                         Item.Item2 += amount;
-                        Inventory[index] = Item;
+                        ResInventory[index] = Item;
                     }
                     Money -= (int)res.Price * amount;
                 }
@@ -257,16 +257,16 @@ namespace TestG
         }
         public void Shop_SellRes(int index, int amount)
         {
-            (Resource, int) Item = Inventory[index];
+            (Resource, int) Item = ResInventory[index];
             if (Item.Item2 > amount)
             {
                 Item.Item2 -= amount;
-                Inventory[index] = Item;
+                ResInventory[index] = Item;
                 Money += (int)(Item.Item1.Price * amount);
             }
             else if (Item.Item2 == amount)
             {
-                Inventory.RemoveAt(index);
+                ResInventory.RemoveAt(index);
                 Money += (int)(Item.Item1.Price * amount);
             }
             else
@@ -277,10 +277,10 @@ namespace TestG
         }
         public void Shop_SellAll()
         {
-            for(int i = Inventory.Count-1; i > 0; i--)
+            for(int i = ResInventory.Count-1; i > 0; i--)
             {
-                Money += (int)Inventory[i].Item1.Price * Inventory[i].Item2;
-                Inventory.RemoveAt(i);
+                Money += (int)ResInventory[i].Item1.Price * ResInventory[i].Item2;
+                ResInventory.RemoveAt(i);
             }
         }
         ~Player()

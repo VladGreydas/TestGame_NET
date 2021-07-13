@@ -15,93 +15,79 @@ namespace TestG
         public int WagonCap { get; set; }
         public Train()
         {
-
-        }
-        public Train(int ID)
-        {
-            switch (ID)
-            {
-                case 0: //Player Train
-                    {
-                        Locomotive_ = new Locomotive(0);
-                        WagonCap = GetWagonSlots();
-                        Wagons = new List<Wagon>
+            WagonCap = GetWagonSlots();
+            Wagons = new List<Wagon>
                         {
                             new CargoWagon(0),
                             new WeaponWagon(0)
                         };
-                        break; 
-                    }
-                case 1: //Enemy trains
+        }
+        public Train(int ID)
+        {
+            Random random = new Random();
+            Locomotive_ = new Locomotive("Mad Mary", 4500, 625, 1000, Locomotive.TypeFuel.Uranium, 50, 10000);
+            WagonCap = GetWagonSlots();
+            Wagons = new List<Wagon>();
+            while (Wagons.Count <= WagonCap)
+            {
+                int index = random.Next(0, 10);
+                if (index < 3)
+                {
+                    int chs = random.Next(2);
+                    if (chs == 0)
                     {
-                        Random random = new Random();
-                        Locomotive_ = new Locomotive("Mad Mary", 4500, 625, 1000, Locomotive.TypeFuel.Uranium, 50, 10000);
-                        WagonCap = GetWagonSlots();
-                        Wagons = new List<Wagon>();
-                        while(Wagons.Count <= WagonCap)
-                        {
-                            int index = random.Next(0, 10);
-                            if (index < 3)
-                            {
-                                int chs = random.Next(2);
-                                if(chs == 0)
-                                {
-                                    Wagons.Add(new CargoWagon(0));
-                                    continue;
-                                }
-                                else
-                                {
-                                    Wagons.Add(new WeaponWagon(0));
-                                    continue;
-                                }                                                               
-                            }
-                            else if(index >= 4 && index < 7)
-                            {
-                                int chs = random.Next(2);
-                                if (chs == 0)
-                                {
-                                    Wagons.Add(new CargoWagon("Cargo-2", 2000, 400, 400, 15));
-                                    continue;
-                                }
-                                else
-                                {
-                                    Wagons.Add(new WeaponWagon("Weapon-2", 3250, 500, 650, 1, 250));
-                                    continue;
-                                }
-                            }
-                            else if(index <= 7 && index < 9)
-                            {
-                                int chs = random.Next(2);
-                                if (chs == 0)
-                                {
-                                    Wagons.Add(new CargoWagon("Cargo-3", 2500, 500, 450, 20));
-                                    continue;
-                                }
-                                else
-                                {
-                                    Wagons.Add(new WeaponWagon("Weapon-3", 4000, 750, 800, 1, 500));
-                                    continue;
-                                }
-                            }
-                            else
-                            {
-                                int chs = random.Next(2);
-                                if (chs == 0)
-                                {
-                                    Wagons.Add(new CargoWagon("Cargo-5", 3500, 700, 550, 30));
-                                    continue;
-                                }
-                                else
-                                {
-                                    Wagons.Add(new WeaponWagon("Weapon-5", 5500, 1500, 1250, 2, 1100));
-                                    continue;
-                                }
-                            }
-                        }
-                        break;
+                        Wagons.Add(new CargoWagon(0));
+                        continue;
                     }
+                    else
+                    {
+                        Wagons.Add(new WeaponWagon(0));
+                        continue;
+                    }
+                }
+                else if (index >= 4 && index < 7)
+                {
+                    int chs = random.Next(2);
+                    if (chs == 0)
+                    {
+                        Wagons.Add(new CargoWagon("Cargo-2", 2000, 400, 400, 15));
+                        continue;
+                    }
+                    else
+                    {
+                        Wagons.Add(new WeaponWagon("Weapon-2", 3250, 500, 650, 1, 250));
+                        continue;
+                    }
+                }
+                else if (index <= 7 && index < 9)
+                {
+                    int chs = random.Next(2);
+                    if (chs == 0)
+                    {
+                        Wagons.Add(new CargoWagon("Cargo-3", 2500, 500, 450, 20));
+                        continue;
+                    }
+                    else
+                    {
+                        Wagons.Add(new WeaponWagon("Weapon-3", 4000, 750, 800, 1, 500));
+                        continue;
+                    }
+                }
+                else
+                {
+                    int chs = random.Next(2);
+                    if (chs == 0)
+                    {
+                        Wagons.Add(new CargoWagon("Cargo-5", 3500, 700, 550, 30));
+                        continue;
+                    }
+                    else
+                    {
+                        Wagons.Add(new WeaponWagon("Weapon-5", 5500, 1500, 1250, 2, 1100));
+                        continue;
+                    }
+                }
             }
-            
         }
         public List<(WeaponWagon, int)> GetWeaponWagons()
         {

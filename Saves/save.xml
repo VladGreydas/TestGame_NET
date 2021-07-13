@@ -1,35 +1,42 @@
 <?xml version="1.0"?>
 <Player xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>A1</Name>
-  <Money>8540</Money>
-  <EXP>45</EXP>
-  <MaxEXP>100</MaxEXP>
-  <LVL>1</LVL>
+  <Money>7385</Money>
+  <EXP>84</EXP>
+  <MaxEXP>200</MaxEXP>
+  <LVL>2</LVL>
   <T>
     <Locomotive_>
       <Name>SantaFe SF720</Name>
       <Weight>6500</Weight>
-      <Power>725</Power>
+      <Power>1475</Power>
       <Armor>950</Armor>
-      <MaxArmor>950</MaxArmor>
+      <MaxArmor>2450</MaxArmor>
       <Type_Fuel>Diesel</Type_Fuel>
       <Fuel>50</Fuel>
-      <Fuelcap>50</Fuelcap>
+      <Fuelcap>80</Fuelcap>
       <Price>5000</Price>
-      <LVL>0</LVL>
-      <UpgradeCost>100</UpgradeCost>
+      <LVL>5</LVL>
+      <UpgradeCost>1600</UpgradeCost>
     </Locomotive_>
     <WeaponWagon>
       <Name>Weapon-1</Name>
       <Weight>2500</Weight>
       <Price>375</Price>
       <Armor>1500</Armor>
-      <MaxArmor>1500</MaxArmor>
-      <LVL>4</LVL>
-      <UpgradeCost>1100</UpgradeCost>
-      <Weapon_slots>1</Weapon_slots>
-      <Ammo_cap>650</Ammo_cap>
+      <MaxArmor>2000</MaxArmor>
+      <LVL>5</LVL>
+      <UpgradeCost>1600</UpgradeCost>
+      <Weapon_slots>2</Weapon_slots>
+      <Ammo_cap>900</Ammo_cap>
       <Weapons>
+        <Weapon>
+          <Name>Panzer Howitzer</Name>
+          <DMG>450</DMG>
+          <Weapon_Type>HEAVY_CANNON</Weapon_Type>
+          <Price>750</Price>
+          <UpgradeCost>0</UpgradeCost>
+        </Weapon>
         <Weapon>
           <Name>Panzer Howitzer</Name>
           <DMG>450</DMG>
@@ -103,7 +110,27 @@
         </Weapon>
       </Weapons>
     </WeaponWagon>
-    <WagonCap>7</WagonCap>
+    <CargoWagon>
+      <Name>Cargo-5</Name>
+      <Weight>3500</Weight>
+      <Price>700</Price>
+      <Armor>550</Armor>
+      <MaxArmor>550</MaxArmor>
+      <LVL>0</LVL>
+      <UpgradeCost>100</UpgradeCost>
+      <Capacity>30</Capacity>
+    </CargoWagon>
+    <CargoWagon>
+      <Name>Cargo-5</Name>
+      <Weight>3500</Weight>
+      <Price>700</Price>
+      <Armor>550</Armor>
+      <MaxArmor>550</MaxArmor>
+      <LVL>0</LVL>
+      <UpgradeCost>100</UpgradeCost>
+      <Capacity>30</Capacity>
+    </CargoWagon>
+    <WagonCap>14</WagonCap>
   </T>
   <Towns>
     <Town>
@@ -460,20 +487,20 @@
   <SelectedTown>
     <DefMod>1.5</DefMod>
     <ProfMod>0.5</ProfMod>
-    <ID>3</ID>
-    <Name>Uzhorod</Name>
+    <ID>4</ID>
+    <Name>Kharkiv</Name>
     <DefResourse>
-      <ID>12</ID>
-      <Price>10</Price>
-      <Res>WATER_BARREL</Res>
-    </DefResourse>
-    <ProfResourse>
       <ID>17</ID>
       <Price>20</Price>
       <Res>METAL_SCRAP</Res>
+    </DefResourse>
+    <ProfResourse>
+      <ID>0</ID>
+      <Price>20</Price>
+      <Res>WOOD</Res>
     </ProfResourse>
     <Shop>true</Shop>
-    <Workshop>false</Workshop>
+    <Workshop>true</Workshop>
     <Saloon>false</Saloon>
   </SelectedTown>
   <Inventory>
@@ -484,14 +511,6 @@
         <Res>STONE</Res>
       </Item1>
       <Item2>5</Item2>
-    </ValueTupleOfResourceInt32>
-    <ValueTupleOfResourceInt32>
-      <Item1>
-        <ID>1</ID>
-        <Price>30</Price>
-        <Res>STONE</Res>
-      </Item1>
-      <Item2>3</Item2>
     </ValueTupleOfResourceInt32>
   </Inventory>
 </Player>
